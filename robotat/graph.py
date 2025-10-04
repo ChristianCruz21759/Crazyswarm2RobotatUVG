@@ -8,7 +8,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from motion_capture_tracking_interfaces.msg import NamedPoseArray
 
 # Lista de nombres de objetos a rastrear
-OBJECT_NAMES = ['cf5']  # Modifica según tus objetos
+OBJECT_NAMES = ['cf9']  # Modifica según tus objetos
 
 class PoseLogger(Node):
     def __init__(self):

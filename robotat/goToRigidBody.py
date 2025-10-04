@@ -15,7 +15,7 @@ import numpy as np
 DEFAULT_CF_NUMBER = 6  # Número del Crazyflie
 DEFAULT_RB_NAME = 'Chgbase1'  # Nombre del Cuerpo Rigido
 Z = 0.3  # Altura de vuelo en metros
-OFFSET = np.array([0.0, 0.0, 0.0])  # Offset adicional a la posición objetivo
+OFFSET = [0.0, 0.0, 0.0]  # Offset adicional a la posición objetivo
 TAKEOFF_DURATION = 3.0  # Duración del despegue en segundos
 HOVER_DURATION = 3.0    # Tiempo de espera en la posición objetivo en segundos
 
@@ -27,12 +27,13 @@ def main():
     # Declarar y obtener parámetros
     node.declare_parameter("cf_number", DEFAULT_CF_NUMBER)
     node.declare_parameter("rigid_body_name", DEFAULT_RB_NAME)
+    node.declare_parameter("offset", OFFSET)
+
     node.cf_number = node.get_parameter("cf_number").value
     node.rigid_body_name = node.get_parameter("rigid_body_name").value
+    node.offset = node.get_parameter("offset").value
 
-    qos_profile = QoSProfile(depth=10)
-    qos_profile.reliability = ReliabilityPolicy.BEST_EFFORT
-
+    # Variables para almacenar posiciones
     node.cf_position = None
     node.rigid_body_position = None
 
@@ -50,6 +51,9 @@ def main():
                     named_pose.pose.position.y,
                     named_pose.pose.position.z
                 ])
+
+    qos_profile = QoSProfile(depth=10)
+    qos_profile.reliability = ReliabilityPolicy.BEST_EFFORT
 
     # Suscribirse al tópico de poses
     node.create_subscription(
@@ -69,8 +73,9 @@ def main():
     print(f'Posición de {node.rigid_body_name} [x: {node.rigid_body_position[0]:.3f} y: {node.rigid_body_position[1]:.3f} z: {node.rigid_body_position[2]:.3f}]')
 
     # Calcular posición objetivo - posición del RigidBody
-    goal = np.array(node.rigid_body_position) + OFFSET
+    goal = np.array(node.rigid_body_position)
     goal[2] = Z # Altura fija
+    goal = goal + np.array(node.offset)
 
     print(f'Posición objetivo [x: {goal[0]:.3f} y: {goal[1]:.3f} z: {goal[2]:.3f}]')
 

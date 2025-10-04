@@ -13,8 +13,8 @@ import numpy as np
 
 # Parámetros de vuelo
 DEFAULT_CF_NUMBER = 1  # Número del Crazyflie
-Z = 0.6  # Altura de vuelo en metros
-OFFSET = np.array([0.0, 0.0, 0.0])  # Offset adicional a la posición objetivo
+Z = 0.3  # Altura de vuelo en metros
+OFFSET = [0.0, 0.0, 0.0]  # Offset adicional a la posición objetivo
 TAKEOFF_DURATION = 3.0  # Duración del despegue en segundos
 HOVER_DURATION = 3.0    # Tiempo de espera en la posición objetivo en segundos
 
@@ -25,11 +25,12 @@ def main():
 
     # Declarar y obtener parámetros
     node.declare_parameter("cf_number", DEFAULT_CF_NUMBER)
+    node.declare_parameter("offset", OFFSET)
+
     node.cf_number = node.get_parameter("cf_number").value
+    node.offset = node.get_parameter("offset").value
 
-    qos_profile = QoSProfile(depth=10)
-    qos_profile.reliability = ReliabilityPolicy.BEST_EFFORT
-
+    # Variables para almacenar posiciones
     node.cf_position = None
 
     def poses_callback(msg):
@@ -40,6 +41,9 @@ def main():
                     named_pose.pose.position.y,
                     named_pose.pose.position.z
                 ])
+
+    qos_profile = QoSProfile(depth=10)
+    qos_profile.reliability = ReliabilityPolicy.BEST_EFFORT
 
     # Suscribirse al tópico de poses
     node.create_subscription(
@@ -58,11 +62,10 @@ def main():
     print(f'Posición del cf{node.cf_number} [x: {node.cf_position[0]:.3f} y: {node.cf_position[1]:.3f} z: {node.cf_position[2]:.3f}]')
 
     # Calcular posición objetivo - posición inicial
-    goal = np.array(cf.initialPosition) + OFFSET
+    goal = np.array(cf.initialPosition)
     goal[2] = Z # Altura fija
-
-    print(f'Posición objetivo [x: {goal[0]:.3f} y: {goal[1]:.3f} z: {goal[2]:.3f}]')
-    cf = node.crazyfliesByName[f'cf{node.cf_number}'] # Obtener el Crazyflie por su nombre
+    goal = goal + np.array(node.offset)
+    print(f'Posicion objetivo [x: {goal[0]:.3f} y: {goal[1]:.3f} z: {goal[2]:.3f}]')
 
     # Esperar hasta recibir la posición
     while rclpy.ok() and node.cf_position is None:

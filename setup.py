@@ -33,7 +33,8 @@ setup(
         	"goToInitialPosition = robotat.goToInitialPosition:main",
         	"hover = robotat.hover:main",
         	"graphPos = robotat.graph:main",
-        	"latencyMeasure = robotat.latencyMeasure:main"
+        	"latencyMeasure = robotat.latencyMeasure:main",
+        	"kalman = robotat.kalman:main"
         ],
     },
 )

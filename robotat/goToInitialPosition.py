@@ -7,6 +7,7 @@
 import rclpy
 from motion_capture_tracking_interfaces.msg import NamedPoseArray
 from rclpy.qos import QoSProfile, ReliabilityPolicy
+from crazyflie_interfaces.msg import Status
 
 from crazyflie_py import Crazyswarm
 import numpy as np
@@ -32,6 +33,7 @@ def main():
 
     # Variables para almacenar posiciones
     node.cf_position = None
+    node.battery_voltage = None
 
     def poses_callback(msg):
         for named_pose in msg.poses:
@@ -42,18 +44,31 @@ def main():
                     named_pose.pose.position.z
                 ])
 
+    def status_callback(msg):
+        node.battery_voltage = msg.battery_voltage
+
     qos_profile = QoSProfile(depth=10)
     qos_profile.reliability = ReliabilityPolicy.BEST_EFFORT
 
     # Suscribirse al tópico de poses
-    node.create_subscription(
-        NamedPoseArray,
-        '/poses',
-        poses_callback,
-        qos_profile
-    )
+    node.create_subscription(NamedPoseArray, '/poses', poses_callback, qos_profile)
+
+    # Suscribirse al tópico de status
+    node.create_subscription(Status, f'cf{node.cf_number}/status', status_callback, 10)
 
     cf = node.crazyfliesByName[f'cf{node.cf_number}'] # Obtener el Crazyflie por su nombre
+
+    print(f'Batería del cf{node.cf_number}: {node.battery_voltage:.2f} V')
+    if node.battery_voltage <= 3.5:
+        print('Nivel crítico de batería. El vuelo no es seguro, cargar batería manualmente')
+        node.destroy_node()
+        rclpy.shutdown()
+        return
+    elif node.battery_voltage <= 3.7:
+        print('Nivel bajo de batería. Enviar a estación de carga')
+        node.destroy_node()
+        rclpy.shutdown()
+        return
 
     # Esperar hasta recibir la posición
     while rclpy.ok() and node.cf_position is None:
@@ -66,10 +81,6 @@ def main():
     goal[2] = Z # Altura fija
     goal = goal + np.array(node.offset)
     print(f'Posicion objetivo [x: {goal[0]:.3f} y: {goal[1]:.3f} z: {goal[2]:.3f}]')
-
-    # Esperar hasta recibir la posición
-    while rclpy.ok() and node.cf_position is None:
-        rclpy.spin_once(node, timeout_sec=0.1)
 
     distance = np.linalg.norm(goal - node.cf_position)
     velocity = 0.2 # m/s (velocidad baja para precisión)

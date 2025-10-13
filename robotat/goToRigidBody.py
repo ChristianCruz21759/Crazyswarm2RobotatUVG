@@ -25,8 +25,6 @@ def main():
     timeHelper = swarm.timeHelper
     node = swarm.allcfs
 
-    cf = node.crazyfliesByName[f'cf{node.cf_number}']
-
     # Declarar y obtener parámetros
     node.declare_parameter("cf_number", DEFAULT_CF_NUMBER)
     node.declare_parameter("rigid_body_name", DEFAULT_RB_NAME)
@@ -58,9 +56,6 @@ def main():
 
     def status_callback(msg):
         node.battery_voltages = msg.battery_voltage
-        # node.pm_states[drone_id] = msg.pm_state
-        # node.latency[drone_id] = msg.latency_unicast
-        # node.last_status_time[drone_id] = time.time()
 
     qos_profile = QoSProfile(depth=10)
     qos_profile.reliability = ReliabilityPolicy.BEST_EFFORT
@@ -71,43 +66,50 @@ def main():
     # Suscribirse al topico de status
     node.create_subscription(Status, f'{cf}/status', status_callback, 10)
 
+    cf = node.crazyfliesByName[f'cf{node.cf_number}']
+
+    print(f'Batería del cf{node.cf_number}: {node.battery_voltage:.2f} V')
     if node.battery_voltage <= 3.5:
-        print(f'Bateria del {cf} critica. Cargar a mano.')
-    elif node.battery_voltage <= 3.7:
-        print(f'Bateria del {cf} baja. Enviar a estacion de carga')
-    else:
-        # color = 'red'
-
-        # Esperar hasta recibir ambas posiciones
-        while rclpy.ok() and (node.cf_position is None or node.rigid_body_position is None):
-            rclpy.spin_once(node, timeout_sec=0.1)
-
-        print(f'Posición de cf{node.cf_number} [x: {node.cf_position[0]:.3f} y: {node.cf_position[1]:.3f} z: {node.cf_position[2]:.3f}]')
-        print(f'Posición de {node.rigid_body_name} [x: {node.rigid_body_position[0]:.3f} y: {node.rigid_body_position[1]:.3f} z: {node.rigid_body_position[2]:.3f}]')
-
-        # Calcular posición objetivo - posición del RigidBody
-        goal = np.array(node.rigid_body_position)
-        goal[2] = Z # Altura fija
-        goal = goal + np.array(node.offset)
-
-        print(f'Posición objetivo [x: {goal[0]:.3f} y: {goal[1]:.3f} z: {goal[2]:.3f}]')
-
-        distance = np.linalg.norm(goal - node.cf_position)
-        velocity = 0.2
-        goto_duration = max(distance/velocity, 1.0)
-
-        # Secuencia de vuelo
-        cf.takeoff(targetHeight=Z, duration=TAKEOFF_DURATION + Z)
-        timeHelper.sleep(TAKEOFF_DURATION + Z)
-
-        cf.goTo(goal, yaw=0.0, duration=goto_duration)
-        timeHelper.sleep(goto_duration + HOVER_DURATION)
-
-        cf.land(targetHeight=0.02, duration=TAKEOFF_DURATION + Z)
-        timeHelper.sleep(TAKEOFF_DURATION + Z)
-
+        print('Nivel crítico de batería. El vuelo no es seguro, cargar batería manualmente')
         node.destroy_node()
         rclpy.shutdown()
+        return
+    elif node.battery_voltage <= 3.7:
+        print('Nivel bajo de batería. Enviar a estación de carga')
+        node.destroy_node()
+        rclpy.shutdown()
+        return
+
+    # Esperar hasta recibir ambas posiciones
+    while rclpy.ok() and (node.cf_position is None or node.rigid_body_position is None):
+        rclpy.spin_once(node, timeout_sec=0.1)
+
+    print(f'Posición de cf{node.cf_number} [x: {node.cf_position[0]:.3f} y: {node.cf_position[1]:.3f} z: {node.cf_position[2]:.3f}]')
+    print(f'Posición de {node.rigid_body_name} [x: {node.rigid_body_position[0]:.3f} y: {node.rigid_body_position[1]:.3f} z: {node.rigid_body_position[2]:.3f}]')
+
+    # Calcular posición objetivo - posición del RigidBody
+    goal = np.array(node.rigid_body_position)
+    goal[2] = Z # Altura fija
+    goal = goal + np.array(node.offset)
+
+    print(f'Posición objetivo [x: {goal[0]:.3f} y: {goal[1]:.3f} z: {goal[2]:.3f}]')
+
+    distance = np.linalg.norm(goal - node.cf_position)
+    velocity = 0.2
+    goto_duration = max(distance/velocity, 1.0)
+
+    # Secuencia de vuelo
+    cf.takeoff(targetHeight=Z, duration=TAKEOFF_DURATION + Z)
+    timeHelper.sleep(TAKEOFF_DURATION + Z)
+
+    cf.goTo(goal, yaw=0.0, duration=goto_duration)
+    timeHelper.sleep(goto_duration + HOVER_DURATION)
+
+    cf.land(targetHeight=0.02, duration=TAKEOFF_DURATION + Z)
+    timeHelper.sleep(TAKEOFF_DURATION + Z)
+
+    node.destroy_node()
+    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

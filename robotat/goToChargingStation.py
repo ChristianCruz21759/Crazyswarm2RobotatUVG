@@ -1,58 +1,54 @@
 #!/usr/bin/env python3
 
+# GO TO CHARGING STATION
+# Este script obtiene la posición de un Crazyflie y un cuerpo rígido (RigidBody) usando ROS2,
+# y mueve el dron a la posición del cuerpo rígido, realizando una secuencia de despegue, vuelo y aterrizaje.
+
 import rclpy
 from motion_capture_tracking_interfaces.msg import NamedPoseArray
-from rclpy.qos import QoSProfile, ReliabilityPolicy
 from crazyflie_interfaces.msg import Status
+from rclpy.qos import QoSProfile, ReliabilityPolicy
 
 from crazyflie_py import Crazyswarm
 import numpy as np
 
 # Parámetros de vuelo
-DEFAULT_CF_NUMBER = 8  # Número del Crazyflie
-DEFAULT_RB_NAME = 'RigidBody75' # Nombre del cuerpo rigido
+DEFAULT_CF_NUMBER = 6  # Número del Crazyflie
+DEFAULT_CB_NUMBER = 1  # Número de la estación de carga
 Z = 0.3  # Altura de vuelo en metros
-OFFSET = [0.0, 0.0, 0.0]  # Offset adicional a la posición objetivo
+OFFSET = [0.0, -0.5, 0.0]  # Offset adicional a la posición objetivo
 TAKEOFF_DURATION = 3.0  # Duración del despegue en segundos
-HOVER_DURATION = 0.0    # Tiempo de espera en la posición objetivo en segundos
-
+HOVER_DURATION = 3.0    # Tiempo de espera en la posición objetivo en segundos
 
 def main():
-    N_CYCLES = 10
-    velocity = 0.3
-
-    # rclpy.init()
-    # Usar el nodo de Crazyswarm para la suscripción
-    swarm = Crazyswarm()
+    swarm = Crazyswarm() # Inicializar Crazyswarm y ROS2
     timeHelper = swarm.timeHelper
     node = swarm.allcfs
 
     # Declarar y obtener parámetros
     node.declare_parameter("cf_number", DEFAULT_CF_NUMBER)
-    node.declare_parameter("rigid_body_name", DEFAULT_RB_NAME)
+    node.declare_parameter("charging_station_number", DEFAULT_CB_NUMBER)
     node.declare_parameter("offset", OFFSET)
 
     node.cf_number = node.get_parameter("cf_number").value
-    node.rigid_body_name = node.get_parameter("rigid_body_name").value
+    node.charging_station_number = node.get_parameter("charging_station_number").value
     node.offset = node.get_parameter("offset").value
 
     # Variables para almacenar posiciones
-    cf_position = None
-    rb_position = None
+    node.cf_position = None
+    node.charging_station_position = None
     node.battery_voltage = None
 
-    # Callback para la suscripción
     def poses_callback(msg):
-        nonlocal cf_position, rb_position
         for named_pose in msg.poses:
             if named_pose.name == f'cf{node.cf_number}':
-                cf_position = np.array([
+                node.cf_position = np.array([
                     named_pose.pose.position.x,
                     named_pose.pose.position.y,
                     named_pose.pose.position.z
                 ])
-            if named_pose.name == node.rigid_body_name:
-                rb_position = np.array([
+            if named_pose.name == f'ChgBase{node.charging_station_number}':
+                node.charging_station_position = np.array([
                     named_pose.pose.position.x,
                     named_pose.pose.position.y,
                     named_pose.pose.position.z
@@ -71,7 +67,7 @@ def main():
     node.create_subscription(Status, f'{cf}/status', status_callback, 10)
 
     cf = node.crazyfliesByName[f'cf{node.cf_number}']
-    
+
     print(f'Batería del cf{node.cf_number}: {node.battery_voltage:.2f} V')
     if node.battery_voltage <= 3.5:
         print('Nivel crítico de batería. El vuelo no es seguro, cargar batería manualmente')
@@ -84,38 +80,36 @@ def main():
         rclpy.shutdown()
         return
 
-    # ---- Despegue ----
+    # Esperar hasta recibir ambas posiciones
+    while rclpy.ok() and (node.cf_position is None or node.charging_station_position is None):
+        rclpy.spin_once(node, timeout_sec=0.1)
+
+    print(f'Posición de cf{node.cf_number} [x: {node.cf_position[0]:.3f} y: {node.cf_position[1]:.3f} z: {node.cf_position[2]:.3f}]')
+    # print(f'Posición de {node.rigid_body_name} [x: {node.rigid_body_position[0]:.3f} y: {node.rigid_body_position[1]:.3f} z: {node.rigid_body_position[2]:.3f}]')
+
+    # Calcular posición objetivo - posición del RigidBody
+    goal = np.array(node.charging_station_position)
+    goal[2] = Z # Altura fija
+    goal = goal + np.array(node.offset)
+
+    print(f'Posición objetivo [x: {goal[0]:.3f} y: {goal[1]:.3f} z: {goal[2]:.3f}]')
+
+    distance = np.linalg.norm(goal - node.cf_position)
+    velocity = 0.2
+    goto_duration = max(distance/velocity, 1.0)
+
+    # Secuencia de vuelo
     cf.takeoff(targetHeight=Z, duration=TAKEOFF_DURATION + Z)
     timeHelper.sleep(TAKEOFF_DURATION + Z)
 
-    # ---- Bucle de seguimiento ----
-    for i in range(N_CYCLES):
-        # Esperar hasta recibir ambas posiciones
-        cf_position = None
-        rb_position = None
-        while rclpy.ok() and (cf_position is None or rb_position is None):
-            rclpy.spin_once(node, timeout_sec=0.1)
+    cf.goTo(goal, yaw=0.0, duration=goto_duration)
+    timeHelper.sleep(goto_duration + HOVER_DURATION)
 
-        goal = np.array(rb_position)
-        goal[2] = max(Z, goal[2])  # Seguir altura de cuerpo rigido o altura minima
-        goal = goal + np.array(node.offset)
-
-        distance = np.linalg.norm(goal - cf_position)
-        goto_duration = max(distance / velocity, 1.0)
-
-        print(f'Ciclo {i+1}/{N_CYCLES} -> Moviendo hacia [x: {goal[0]:.3f} y: {goal[1]:.3f} z: {goal[2]:.3f}]')
-
-        cf.goTo(goal, yaw=0.0, duration=goto_duration + HOVER_DURATION)
-        timeHelper.sleep(goto_duration + HOVER_DURATION)
-
-    # ---- Aterrizaje ----
     cf.land(targetHeight=0.02, duration=TAKEOFF_DURATION + Z)
     timeHelper.sleep(TAKEOFF_DURATION + Z)
 
-    # Finalizar ROS
     node.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()

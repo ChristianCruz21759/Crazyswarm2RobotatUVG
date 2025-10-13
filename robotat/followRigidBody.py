@@ -8,8 +8,8 @@ from crazyflie_py import Crazyswarm
 import numpy as np
 
 # Parámetros de vuelo
-DEFAULT_CF_NUMBER = 1  # Número del Crazyflie
-DEFAULT_RB_NAME = 'RigidBody72' # Nombre del cuerpo rigido
+DEFAULT_CF_NUMBER = 8  # Número del Crazyflie
+DEFAULT_RB_NAME = 'RigidBody75' # Nombre del cuerpo rigido
 Z = 0.3  # Altura de vuelo en metros
 OFFSET = [0.0, 0.0, 0.0]  # Offset adicional a la posición objetivo
 TAKEOFF_DURATION = 3.0  # Duración del despegue en segundos

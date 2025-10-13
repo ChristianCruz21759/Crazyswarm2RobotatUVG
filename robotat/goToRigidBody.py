@@ -6,6 +6,7 @@
 
 import rclpy
 from motion_capture_tracking_interfaces.msg import NamedPoseArray
+from crazyflie_interfaces.msg import Status
 from rclpy.qos import QoSProfile, ReliabilityPolicy
 
 from crazyflie_py import Crazyswarm
@@ -13,9 +14,9 @@ import numpy as np
 
 # Parámetros de vuelo
 DEFAULT_CF_NUMBER = 6  # Número del Crazyflie
-DEFAULT_RB_NAME = 'Chgbase1'  # Nombre del Cuerpo Rigido
+DEFAULT_RB_NAME = 'RigidBody75'  # Nombre del Cuerpo Rigido
 Z = 0.3  # Altura de vuelo en metros
-OFFSET = [0.0, 0.0, 0.0]  # Offset adicional a la posición objetivo
+OFFSET = [0.0, -0.5, 0.0]  # Offset adicional a la posición objetivo
 TAKEOFF_DURATION = 3.0  # Duración del despegue en segundos
 HOVER_DURATION = 3.0    # Tiempo de espera en la posición objetivo en segundos
 
@@ -23,6 +24,8 @@ def main():
     swarm = Crazyswarm() # Inicializar Crazyswarm y ROS2
     timeHelper = swarm.timeHelper
     node = swarm.allcfs
+
+    cf = node.crazyfliesByName[f'cf{node.cf_number}']
 
     # Declarar y obtener parámetros
     node.declare_parameter("cf_number", DEFAULT_CF_NUMBER)
@@ -36,6 +39,7 @@ def main():
     # Variables para almacenar posiciones
     node.cf_position = None
     node.rigid_body_position = None
+    node.battery_voltage = None
 
     def poses_callback(msg):
         for named_pose in msg.poses:
@@ -52,49 +56,58 @@ def main():
                     named_pose.pose.position.z
                 ])
 
+    def status_callback(msg):
+        node.battery_voltages = msg.battery_voltage
+        # node.pm_states[drone_id] = msg.pm_state
+        # node.latency[drone_id] = msg.latency_unicast
+        # node.last_status_time[drone_id] = time.time()
+
     qos_profile = QoSProfile(depth=10)
     qos_profile.reliability = ReliabilityPolicy.BEST_EFFORT
 
     # Suscribirse al tópico de poses
-    node.create_subscription(
-        NamedPoseArray,
-        '/poses',
-        poses_callback,
-        qos_profile
-    )
+    node.create_subscription(NamedPoseArray, '/poses', poses_callback, qos_profile)
 
-    cf = node.crazyfliesByName[f'cf{node.cf_number}']
+    # Suscribirse al topico de status
+    node.create_subscription(Status, f'{cf}/status', status_callback, 10)
 
-    # Esperar hasta recibir ambas posiciones
-    while rclpy.ok() and (node.cf_position is None or node.rigid_body_position is None):
-        rclpy.spin_once(node, timeout_sec=0.1)
+    if node.battery_voltage <= 3.5:
+        print(f'Bateria del {cf} critica. Cargar a mano.')
+    elif node.battery_voltage <= 3.7:
+        print(f'Bateria del {cf} baja. Enviar a estacion de carga')
+    else:
+        # color = 'red'
 
-    print(f'Posición de cf{node.cf_number} [x: {node.cf_position[0]:.3f} y: {node.cf_position[1]:.3f} z: {node.cf_position[2]:.3f}]')
-    print(f'Posición de {node.rigid_body_name} [x: {node.rigid_body_position[0]:.3f} y: {node.rigid_body_position[1]:.3f} z: {node.rigid_body_position[2]:.3f}]')
+        # Esperar hasta recibir ambas posiciones
+        while rclpy.ok() and (node.cf_position is None or node.rigid_body_position is None):
+            rclpy.spin_once(node, timeout_sec=0.1)
 
-    # Calcular posición objetivo - posición del RigidBody
-    goal = np.array(node.rigid_body_position)
-    goal[2] = Z # Altura fija
-    goal = goal + np.array(node.offset)
+        print(f'Posición de cf{node.cf_number} [x: {node.cf_position[0]:.3f} y: {node.cf_position[1]:.3f} z: {node.cf_position[2]:.3f}]')
+        print(f'Posición de {node.rigid_body_name} [x: {node.rigid_body_position[0]:.3f} y: {node.rigid_body_position[1]:.3f} z: {node.rigid_body_position[2]:.3f}]')
 
-    print(f'Posición objetivo [x: {goal[0]:.3f} y: {goal[1]:.3f} z: {goal[2]:.3f}]')
+        # Calcular posición objetivo - posición del RigidBody
+        goal = np.array(node.rigid_body_position)
+        goal[2] = Z # Altura fija
+        goal = goal + np.array(node.offset)
 
-    distance = np.linalg.norm(goal - node.cf_position)
-    velocity = 0.2
-    goto_duration = max(distance/velocity, 1.0)
+        print(f'Posición objetivo [x: {goal[0]:.3f} y: {goal[1]:.3f} z: {goal[2]:.3f}]')
 
-    # Secuencia de vuelo
-    cf.takeoff(targetHeight=Z, duration=TAKEOFF_DURATION + Z)
-    timeHelper.sleep(TAKEOFF_DURATION + Z)
+        distance = np.linalg.norm(goal - node.cf_position)
+        velocity = 0.2
+        goto_duration = max(distance/velocity, 1.0)
 
-    cf.goTo(goal, yaw=0.0, duration=goto_duration)
-    timeHelper.sleep(goto_duration + HOVER_DURATION)
+        # Secuencia de vuelo
+        cf.takeoff(targetHeight=Z, duration=TAKEOFF_DURATION + Z)
+        timeHelper.sleep(TAKEOFF_DURATION + Z)
 
-    cf.land(targetHeight=0.02, duration=TAKEOFF_DURATION + Z)
-    timeHelper.sleep(TAKEOFF_DURATION + Z)
+        cf.goTo(goal, yaw=0.0, duration=goto_duration)
+        timeHelper.sleep(goto_duration + HOVER_DURATION)
 
-    node.destroy_node()
-    rclpy.shutdown()
+        cf.land(targetHeight=0.02, duration=TAKEOFF_DURATION + Z)
+        timeHelper.sleep(TAKEOFF_DURATION + Z)
+
+        node.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

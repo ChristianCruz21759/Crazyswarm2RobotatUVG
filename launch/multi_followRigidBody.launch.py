@@ -2,21 +2,28 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 
 def generate_launch_description():
-    drones = [4, 5]  # Lista de cf_number que quieras lanzar
-    offsets = [[0.3, -0.3, 0.0], [0.6, -0.6, 0.0]]
+    drones = [5, 7, 8, 9, 10]  # Lista de cf_number
+    offsets = [
+        [-0.5, 0.5, 0.0],
+        [0.5, 0.0, 0.0],
+        [-0.5, 0.0, 0.0],
+        [0.0, 0.5, 0.0],
+        [0.0, -0.5, 0.0],
+    ]
 
-    i = 0
     nodes = []
-    for cf in drones:
+    for i, cf in enumerate(drones):
         nodes.append(
             Node(
                 package="robotat",
-                executable="followRigidBody",
-                name=f"folow-rb-{cf}",       # nombre único por nodo
+                executable="goToRigidBody",
+                name=f"goTorb{cf}",
                 output="screen",
-                parameters=[{"cf_number": cf, "offset": offsets[i]}]
+                parameters=[{
+                    "cf_number": cf,
+                    "offset": offsets[i],
+                }],
             )
         )
-        i += 1
 
     return LaunchDescription(nodes)

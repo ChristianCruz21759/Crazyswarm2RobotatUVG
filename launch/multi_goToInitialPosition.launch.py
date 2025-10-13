@@ -2,7 +2,7 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 
 def generate_launch_description():
-    drones = [9, 10]  # Lista de cf_number que quieras lanzar
+    drones = [5, 7, 8, 9, 10]  # Lista de cf_number que quieras lanzar
 
     nodes = []
     for cf in drones:

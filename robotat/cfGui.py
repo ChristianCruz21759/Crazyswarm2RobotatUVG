@@ -116,17 +116,28 @@ async def main_page():
                 }
 
     map_chart = ui.echart({
-        'title': {'text': 'Mapa 2D de Drones'},
-        'xAxis': {'min': -1, 'max': 1, 'name': 'X (m)'},
-        'yAxis': {'min': -1.5, 'max': 1.5, 'name': 'Y (m)'},
+        'title': {'text': 'Mapa 3D de Drones'},
+        'tooltip': {'trigger': 'item'},
+        'xAxis3D': {'min': -2, 'max': 2, 'name': 'X (m)'},
+        'yAxis3D': {'min': -2.5, 'max': 2.5, 'name': 'Y (m)'},
+        'zAxis3D': {'min': 0, 'max': 1.5, 'name': 'Z (m)'},  # <-- Aumenta el rango máximo
+        'grid3D': {
+            'boxWidth': 100,
+            'boxDepth': 125,
+            'boxHeight': 75,  # <-- Aumenta la altura del contenedor
+            'viewControl': {
+                'distance': 220,
+                'alpha': 20,
+                'beta': -60
+            }
+        },
         'series': [{
-            'type': 'scatter',
+            'type': 'scatter3D',
             'symbolSize': 14,
             'data': [],
             'label': {'show': True, 'formatter': '{b}'}
-        }],
-        'tooltip': {'trigger': 'item'},
-    }).classes('w-full max-w-xl h-[500px] mt-6 mx-auto shadow-md')
+        }]
+    }).classes('w-[80vw] h-[700px] mt-0 mx-auto shadow-md')  # <-- Cambia mt-6 por mt-2
 
     async def update():
         while True:
@@ -150,10 +161,12 @@ async def main_page():
                 widgets['progress'].props(f'color={color}')
                 widgets['latency_label'].text = f'Latencia: {latency} ms'
 
-                scatter_data.append({
-                    'value': [pos.x, pos.y],
-                    'name': drone_id
-                })
+                if pm_state != 5:
+                    scatter_data.append({
+                        'value': [pos.x, pos.y, pos.z],
+                        'name': drone_id,
+                        'itemStyle': {'color': color}  # <-- Color según batería
+                    })
 
             map_chart.options['series'][0]['data'] = scatter_data
             map_chart.update()

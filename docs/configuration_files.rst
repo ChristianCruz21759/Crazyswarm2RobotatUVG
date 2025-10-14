@@ -9,6 +9,7 @@ utilizan diferentes numeros de antena y canales de radio para evitar interferenc
 para todos ellos.
 
 .. code-block:: yaml
+
     robots:
         cf0:
             enabled: false                      # Habilitar o deshabilitar este drone
@@ -20,6 +21,7 @@ El tipo de robot también se define en crazyflies.yaml y hace referencia a una c
 cf21_single_marker, usando librigidbodytracker para el tracking de los drones en lugar de usar el treacker específico del fabricante, en nuestro caso Motive.
 
 .. code-block:: yaml
+    
     robots_types:
         cf21_single_marker:
             motion_capture: 

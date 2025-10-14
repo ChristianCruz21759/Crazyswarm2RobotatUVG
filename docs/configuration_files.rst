@@ -2,8 +2,8 @@ Archivos de configuración
 ===============================
 
 crazyflies.yaml
-=====================
-El archivo crazyflies.yaml contiene la configuración específica para los drones Crazyflie utilizados en el sistema. Este archivo define parámetros como 
+-----------------------------
+El archivo ``crazyflies.yaml`` contiene la configuración específica para los drones Crazyflie utilizados en el sistema. Este archivo define parámetros como 
 la dirección del radio, la potencia de transmisión y otros ajustes relacionados con la comunicación y el control de los drones. En este proyecto se 
 utilizan diferentes numeros de antena y canales de radio para evitar interferencias entre los drones, y el mismo tipo de drone (cf21_single_marker) 
 para todos ellos.
@@ -37,8 +37,8 @@ En este archivo tambien se definen configuraciones globales para todos los drone
 topicos personalizados, tipo de controlador y estimador, etc.
 
 motion_capture.yaml
-=====================
+-----------------------------
 
 server.yaml
-=====================
+-----------------------------
 

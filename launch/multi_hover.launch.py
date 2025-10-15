@@ -9,7 +9,7 @@ def generate_launch_description():
     config_path = os.path.join(
         get_package_share_directory('robotat'),
         'config',
-        'crazyflies2.yaml'
+        'crazyflies_robotat.yaml'
     )
 
     # Leer configuración YAML
@@ -24,7 +24,7 @@ def generate_launch_description():
             continue  # Saltar los drones deshabilitados
 
         cf_number = drone['cf_number']
-        offset = drone.get('offset', [0.0, 0.0, 0.0])
+        # offset = drone.get('offset', [0.0, 0.0, 0.0])
 
         nodes.append(
             Node(
@@ -34,7 +34,7 @@ def generate_launch_description():
                 output='screen',
                 parameters=[{
                     'cf_number': cf_number,
-                    'offset': offset
+                    # 'offset': offset
                 }],
             )
         )

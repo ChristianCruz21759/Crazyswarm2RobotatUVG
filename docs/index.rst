@@ -9,7 +9,9 @@ Documentacion Crazyswarm2RobotatUVG
 
 
 .. toctree::
-   configuration_files
+   configuracion
+   rutinas_individuales
+   rutinas_enjambre
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Contenido:
 

@@ -27,10 +27,10 @@ def main():
 
     # Declarar y obtener parámetros
     node.declare_parameter("cf_number", DEFAULT_CF_NUMBER)
-    node.declare_parameter("offset", OFFSET)
+    # node.declare_parameter("offset", OFFSET)
 
     node.cf_number = node.get_parameter("cf_number").value
-    node.offset = node.get_parameter("offset").value
+    # node.offset = node.get_parameter("offset").value
 
     # Variables para almacenar posiciones
     node.cf_position = None
@@ -78,7 +78,7 @@ def main():
 
     # Modificado: el goal es la posición actual XY y la Z predeterminada
     goal = np.array([node.cf_position[0], node.cf_position[1], Z])
-    goal = goal + np.array(node.offset)
+    goal = goal + np.array(OFFSET)
     print(f'Posicion objetivo [x: {goal[0]:.3f} y: {goal[1]:.3f} z: {goal[2]:.3f}]')
 
     # distance = np.linalg.norm(goal - cf_position)

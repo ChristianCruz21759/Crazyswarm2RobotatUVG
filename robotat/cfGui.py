@@ -14,7 +14,7 @@ import asyncio
 import time
 
 NUM_DRONES = 10  # <-- Cambia este número según la cantidad de drones
-TIMEOUT_SECONDS = 1.0
+TIMEOUT_SECONDS = 0.1
 
 class GuiNode(Node):
     def __init__(self, num_drones):

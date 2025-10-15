@@ -24,17 +24,17 @@ def generate_launch_description():
             continue  # Saltar los drones deshabilitados
 
         cf_number = drone['cf_number']
-        # offset = drone.get('offset', [0.0, 0.0, 0.0])
+        offset = drone.get('offset', [0.0, 0.0, 0.0])
 
         nodes.append(
             Node(
                 package='robotat',
-                executable='goToInitialPosition',
-                name=f"goToInitial{cf_number}",
+                executable='goToRigidBody',
+                name=f"goToRigidBody{cf_number}",
                 output='screen',
                 parameters=[{
                     'cf_number': cf_number,
-                    # 'offset': offset
+                    'offset': offset
                 }],
             )
         )

@@ -29,8 +29,8 @@ def generate_launch_description():
         nodes.append(
             Node(
                 package='robotat',
-                executable='goToRigidBody',
-                name=f"goToRigidBody{cf_number}",
+                executable='followRigidBody',
+                name=f"followRigidBody{cf_number}",
                 output='screen',
                 parameters=[{
                     'cf_number': cf_number,

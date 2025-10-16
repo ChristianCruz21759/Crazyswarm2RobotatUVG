@@ -13,6 +13,8 @@ El comando ``ros2 launch crazyflie launch.py backend:=cflib`` inicia el servidor
     :align: center
     :alt: Nodos de Crazyswarm2
 
+Se pueden modificar los argumentos predeterminados del Crazyflie Server, como el backend utilizado o los nodos lanzados al momento de iniciar el servidor. Esto se puede realizar agregando argumentos al comando de lanzamiento o modificando directamente el archivo launch ubicado en ``/ros2_ws/src/crazyswarm2/crazyflie/launch``. Para este proyecto, se modifico el archivo launch para deshabilitar el nodo de **gui** y no mostrar la interfaz grafica predeterminada de Crazyswarm2, ya que se desarrollo una interfaz grafica personalizada para el proyecto.
+
 Rutinas individuales 
 --------------------
 Para ejecutar las rutinas individuales, se utiliza el comando ``ros2 run robotat <nombre_rutina>``. Cada rutina es un nodo independiente de ROS2 que puede ser ejecutado por separado. Para incluir un parametro al momento de ejecutar el nodo, se utiliza la siguiente sintaxis: ``ros2 run robotat <nombre_rutina> --ros-args -p <parametro1>:=<valor1> -p <parametro2>:=<valor2>``. Los parametros disponibles para cada rutina se describen en la documentación de las rutinas.

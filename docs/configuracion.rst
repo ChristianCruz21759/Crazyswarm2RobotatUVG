@@ -3,14 +3,14 @@ Configuracion
 
 crazyflies.yaml
 -----------------------------
-El archivo ``crazyflies.yaml`` contiene la configuración específica para los drones Crazyflie utilizados en el sistema. Este archivo define parámetros como la dirección del radio, la potencia de transmisión y otros ajustes relacionados con la comunicación y el control de los drones. En este proyecto se utilizan diferentes numeros de antena y canales de radio para evitar interferencias entre los drones, y el mismo tipo de drone (cf21_single_marker) para todos ellos.
+El archivo ``crazyflies.yaml`` contiene la configuración específica para los drones Crazyflie utilizados en el sistema. Este archivo define parámetros como la dirección del radio, posiciones iniciales y tipo de robot. En este proyecto se utilizan diferentes numeros de antena y canales de radio para evitar interferencias entre los drones, y el mismo tipo de drone (cf21_single_marker) para todos ellos.
 
 .. code-block:: yaml
 
     robots:
         cf0:
             enabled: false                      # Habilitar o deshabilitar este drone
-            uri: radio://0/80/2M/E7E7E7E7EA     # Dirección del radio
+            uri: radio://0/80/2M/E7E7E7E7EA     # URI "radio:// Numero de Crayradio // Canal / Velocidad de datos / Dirección del Crazyflie"
             initial_position: [0.0, 0.0, 0.0]   # Posición inicial (x, y, z)
             type: cf21_single_marker            # Tipo de robot
 
@@ -78,3 +78,25 @@ Por ultimo se definen las configuraciones de dinamica del dron, las cuales son u
 server.yaml
 -----------------------------
 
+En el archivo ``server.yaml`` se definen configuraciones para las alertas del Crazyflie Server y configuraciones relacionadas con la simulacion. En este caso solo se modifica la frecuencia de las alertas para el sistema de captura de movimiento y la comunicacion con los drones.
+
+.. code-block:: yaml
+
+  ros__parameters:
+    warnings:
+      frequency: 10.0 # report/run checks once per second
+      motion_capture:
+        warning_if_rate_outside: [80.0, 120.0]
+      communication:
+        max_unicast_latency: 30.0 # ms
+        min_unicast_ack_rate: 0.9
+        min_unicast_receive_rate: 0.9 # requires status topic to be enabled
+        min_broadcast_receive_rate: 0.9 # requires status topic to be enabled
+        publish_stats: false
+
+Modulos Crazyradio PA
+---------------------
+
+Para la comunicacion entre el computador y los drones Crazyflie se utilizan modulos Crazyradio PA, los cuales permiten una comunicacion estable y de largo alcance. Estos modulos se conectan al computador por medio de un puerto USB y se configuran en el archivo ``crazyflies.yaml``. Para poder utilizar los Crazyradio PA es necesario seguir los pasos de instalacion y configuracion descritos en la documentacion oficial de Bitcraze, disponibles en el siguiente enlace: `Crazyradio PA Installation and USB Permissions <https://www.bitcraze.io/documentation/repository/crazyflie-lib-python/master/installation/usb_permissions/>`_.
+
+Ademas de seguir estos pasos es necesario actualizar el firmware de la Crazyradio PA al incluido en Crazyswarm2, el cual se encuentra en la carpeta ``/ros2_ws/src/crazyswarm2/prebuilt``. Los pasos para actualizar el firmware se encuentran en la documentacion oficial de Bitcraze, disponibles en el siguiente enlace: `Updating the Crazyradio PA firmware <https://www.bitcraze.io/documentation/repository/crazyflie-lib-python/master/installation/crazyradio/>`_.

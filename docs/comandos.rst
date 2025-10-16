@@ -12,3 +12,18 @@ El comando ``ros2 launch crazyflie launch.py backend:=cflib`` inicia el servidor
     :width: 600px
     :align: center
     :alt: Nodos de Crazyswarm2
+
+Rutinas individuales 
+--------------------
+Para ejecutar las rutinas individuales, se utiliza el comando ``ros2 run robotat <nombre_rutina>``. Cada rutina es un nodo independiente de ROS2 que puede ser ejecutado por separado. Para incluir un parametro al momento de ejecutar el nodo, se utiliza la siguiente sintaxis: ``ros2 run robotat <nombre_rutina> --ros-args -p <parametro1>:=<valor1> -p <parametro2>:=<valor2>``. Los parametros disponibles para cada rutina se describen en la documentación de las rutinas.
+
+Rutinas de enjambre
+-------------------
+
+Para ejecutar las rutinas de enjambre, se utiliza el comando ``ros2 launch robotat <nombre_rutina_enjambre>.launch.py``. Cada rutina de enjambre es un archivo launch que inicia multiples nodos de rutina individual, uno por cada dron en el enjambre. Los parametros para cada nodo se definen en el archivo ``crazyflies_robotat.yaml``.
+
+cfGui.py
+--------
+
+La interfaz grafica no se inicia como un nodo de ROS2, sino que se ejecuta por separado. Para iniciar la interfaz grafica, se utiliza el comando ``python3 cfGui.py`` desde la carpeta ``robotat`` o desde VsCode. Esta interfaz permite monitorear el estado de los drones y visualizar la posición de los drones en tiempo real.
+

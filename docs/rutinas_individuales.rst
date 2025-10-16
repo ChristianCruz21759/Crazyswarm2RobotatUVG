@@ -3,7 +3,7 @@ Rutinas de vuelo individuales
 
 Las rutinas de vuelo individuales son secuencias predefinidas que un solo dron puede ejecutar de manera autónoma. Estas rutinas permiten realizar tareas específicas, como despegar, aterrizar, mantener una posición fija, moverse a una posición inicial, entre otras.
 
-Cada rutina fue desarrollada como un nodo independiente de ROS2, lo que permite leer los topicos de estado y posicion relacionadas a cada Crazyflie, y obtener parametros al momento de ejecutar cada nodo. Dentro de los parametros definidos se incluyen el numero de Crazyflie, offsets, nombre de cuerpo rigido, entre otros. 
+Cada rutina fue desarrollada como un nodo independiente de ROS2, lo que permite leer los topicos de estado y posicion relacionadas a cada Crazyflie, y obtener parametros al momento de ejecutar cada nodo. Dentro de los parametros definidos se incluyen el numero de Crazyflie (cf_number), offsets (offset), nombre de cuerpo rigido (rigid_body_name), entre otros. 
 
 Todas las rutinas cuentan con una estructura similar, que incluye la inicialización del nodo, la suscripción a los topicos necesarios, la configuración de los parametrosy la implementación de la lógica de la rutina. La logica incluye la obtencion del nivel de bateria para verificar que el vuelo se pueda realizar, la obtencion de la posicion actual del dron y meta, calculo de distancia y tiempo adecuado para el movimiento, finalizando con envio de comandos de control para ejecutar la rutina deseada.
 

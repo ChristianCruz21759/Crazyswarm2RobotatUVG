@@ -46,3 +46,8 @@ Otros nodos
 - **graph.** Este nodo se utiliza para obtener la posicion de objetos en el espacio de vuelo y graficar su trayectoria durante el tiempo que el nodo estuvo activo, guardando los datos en un archivo csv.
 - **kalman.** Este nodo compara la posicion medida por el sistema de captura de movimiento y la posicion estimada por el filtro de Kalman de un dron individual, graficando ambas posiciones para analizar la precision del filtro.
 - **latencyMeasure.** Este nodo mide la latencia entre Crazyswarm2 y los Crazyflies, guardando los datos en un archivo csv para su posterior analisis.
+
+Creacion de rutinas
+-------------------
+
+Para crear una nueva rutina de vuelo individual, se puede tomar como referencia alguna de las rutinas existentes. Es importante seguir la estructura y convenciones utilizadas en las rutinas actuales para asegurar la compatibilidad con Crazyswarm2 y ROS2. Se deben seguir el mismo procedimiento para crear un nodo dado en la documentacion de ROS2.

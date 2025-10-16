@@ -7,8 +7,13 @@ Cada rutina fue desarrollada como un nodo independiente de ROS2, lo que permite 
 
 Todas las rutinas cuentan con una estructura similar, que incluye la inicialización del nodo, la suscripción a los topicos necesarios, la configuración de los parametrosy la implementación de la lógica de la rutina. La logica incluye la obtencion del nivel de bateria para verificar que el vuelo se pueda realizar, la obtencion de la posicion actual del dron y meta, calculo de distancia y tiempo adecuado para el movimiento, finalizando con envio de comandos de control para ejecutar la rutina deseada.
 
-A continuación se describen las principales rutinas de vuelo individuales desarrolladas:
+**Recomendaciones de uso**
 
+- Antes de ejecutar cualquier rutina, asegúrese de que el Crazyflie Server esté en funcionamiento y que el dron esté correctamente configurado en el archivo ``crazyflies.yaml``.
+- Alinear el eje x del dron con el eje x del sistema de captura de movimiento para evitar errores en la orientacion del dron.
+- Verificar que la batería del dron tenga un nivel adecuado antes de iniciar.
+
+A continuación se describen las principales rutinas de vuelo individuales desarrolladas:
 
 hover
 -----

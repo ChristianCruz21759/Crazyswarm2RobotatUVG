@@ -6,7 +6,7 @@
 Documentacion Crazyswarm2RobotatUVG
 ================================================
 
-En este proyecto se desarrolla la implementacion de un enjambre de drones Crazyflie 2.1 en el ecosistema robotico Robotat en la Universidad del Valle de Guatemala mediante Crazyswarm2 y ROS2. 
+En este proyecto se desarrolla la implementacion de un enjambre de drones Crazyflie 2.1 en el ecosistema robotico Robotat en la Universidad del Valle de Guatemala mediante Crazyswarm2 y ROS2. Crazyswarm2 es una paquete de ROS2 creado para controlar los agentes roboticos de Bitcraze, es un proyecto de codigo abierto y disponible en el siguiente `github <https://github.com/IMRCLab/crazyswarm2>`_. El siguiente articulo describe el proyecto original de Crazyswarm y es la base de todo el proyecto.
 
 .. code-block:: bibtex
 
@@ -25,13 +25,7 @@ En este proyecto se desarrolla la implementacion de un enjambre de drones Crazyf
    note      = {Software available at \url{https://github.com/USC-ACTLab/crazyswarm}},
    }
 
-
-
-Recomendaciones de uso
-----------------------
-
-
-
+En esta documentacion se describen los pasos para la configuracion de Crazyswarm2 en nuestro entorno, asi como las rutinas de vuelo individuales y de enjambre desarrolladas para el proyecto. Ademas, se incluyen recomendaciones de uso y consideraciones importantes para el correcto funcionamiento del sistema.
 
 .. toctree::
    :maxdepth: 2

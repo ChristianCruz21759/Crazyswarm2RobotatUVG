@@ -34,7 +34,8 @@ setup(
         	"hover = robotat.hover:main",
         	"graphPos = robotat.graph:main",
         	"latencyMeasure = robotat.latencyMeasure:main",
-        	"kalman = robotat.kalman:main"
+        	"kalman = robotat.kalman:main",
+        	"multi_hover = robotat.multi_hover:main"
         ],
     },
 )

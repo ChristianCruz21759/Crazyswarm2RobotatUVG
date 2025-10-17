@@ -13,11 +13,11 @@ from crazyflie_py import Crazyswarm
 import numpy as np
 
 # Parámetros de vuelo
-DEFAULT_CF_NUMBER = 9  # Número del Crazyflie
-Z = 0.2  # Altura de vuelo en metros
+DEFAULT_CF_NUMBER = 1  # Número del Crazyflie
+Z = 0.4  # Altura de vuelo en metros
 OFFSET = [0.0, 0.0, 0.0]  # Offset adicional a la posición objetivo
-TAKEOFF_DURATION = 3.0  # Duración del despegue en segundos
-HOVER_DURATION = 2.0    # Tiempo de espera en la posición objetivo en segundos
+TAKEOFF_DURATION = 5.0  # Duración del despegue en segundos
+HOVER_DURATION = 5.0    # Tiempo de espera en la posición objetivo en segundos
 
 def main():
 
@@ -31,6 +31,9 @@ def main():
 
     node.cf_number = node.get_parameter("cf_number").value
     # node.offset = node.get_parameter("offset").value
+
+    cf = node.crazyfliesByName[f'cf{node.cf_number}'] # Obtener el Crazyflie por su nombre
+    print(cf)
 
     # Variables para almacenar posiciones
     node.cf_position = None
@@ -46,20 +49,21 @@ def main():
                 ])
 
     def status_callback(msg):
-        node.battery_voltages = msg.battery_voltage
+        node.battery_voltage = msg.battery_voltage
 
     qos_profile = QoSProfile(depth=10)
     qos_profile.reliability = ReliabilityPolicy.BEST_EFFORT
 
     # Suscribirse al tópico de poses
-    node.create_subscription(NamedPoseArray, '/poses', poses_callback,qos_profile)
+    node.create_subscription(NamedPoseArray, '/poses', poses_callback, qos_profile)
 
     # Suscribirse al topico de status
-    node.create_subscription(Status, f'{cf}/status', status_callback, 10)
+    node.create_subscription(Status, f'cf{node.cf_number}/status', status_callback, qos_profile)
 
-    cf = node.crazyfliesByName[f'cf{node.cf_number}'] # Obtener el Crazyflie por su nombre
+    while rclpy.ok() and node.battery_voltage is None:
+        rclpy.spin_once(node, timeout_sec=0.1)
 
-    print(f'Batería del cf{node.cf_number}: {node.battery_voltage:.2f} V')
+    print(f'Batería del cf{node.cf_number}: {node.battery_voltage} V')
     if node.battery_voltage <= 3.5:
         print('Nivel crítico de batería. El vuelo no es seguro, cargar batería manualmente')
         node.destroy_node()

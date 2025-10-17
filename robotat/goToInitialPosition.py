@@ -58,6 +58,9 @@ def main():
 
     cf = node.crazyfliesByName[f'cf{node.cf_number}'] # Obtener el Crazyflie por su nombre
 
+    while rclpy.ok() and node.battery_voltage is None:
+        rclpy.spin_once(node, timeout_sec=0.1)
+
     print(f'Batería del cf{node.cf_number}: {node.battery_voltage:.2f} V')
     if node.battery_voltage <= 3.5:
         print('Nivel crítico de batería. El vuelo no es seguro, cargar batería manualmente')

@@ -25,5 +25,5 @@ En este proyecto se desarrolla la implementación de un enjambre de drones Crazy
 
 Se logro implementar un enjambre de 10 Crazyflies 2.1, utilizando el sistema de captura de movimiento Optitrack en el ecosistema Robotat, para esta implementacion se utilizo un marcador individual por dron demostrando facilidad de uso respecto a un cuerpo rigido. Ademas de implementar las rutinas de ejemplo incluidas en Crazyswarm2 se desarrollaron rutinas personalizadas las cuales se encuentran en este repositorio. Ademas de las rutinas se incluye una interfaz grafica para monitorear el estado de todos los drones dentro del enjambre y documentacion para la correcta configuracion en el laboratorio de robotica en la UVG.
 
-![Enjambre de drones](img/EnjambreCrazyflies.jpg)
+<!-- ![Enjambre de drones](img/EnjambreCrazyflies.jpg) -->
 

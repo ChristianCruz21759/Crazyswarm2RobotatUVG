@@ -55,7 +55,7 @@ def main():
                 ])
 
     def status_callback(msg):
-        node.battery_voltages = msg.battery_voltage
+        node.battery_voltage = msg.battery_voltage
 
     qos_profile = QoSProfile(depth=10)
     qos_profile.reliability = ReliabilityPolicy.BEST_EFFORT
@@ -67,6 +67,9 @@ def main():
     node.create_subscription(Status, f'{cf}/status', status_callback, 10)
 
     cf = node.crazyfliesByName[f'cf{node.cf_number}']
+
+    while rclpy.ok() and node.battery_voltage is None:
+        rclpy.spin_once(node, timeout_sec=0.1)
 
     print(f'Batería del cf{node.cf_number}: {node.battery_voltage:.2f} V')
     if node.battery_voltage <= 3.5:

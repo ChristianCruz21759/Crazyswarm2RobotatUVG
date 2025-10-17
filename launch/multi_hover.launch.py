@@ -7,7 +7,8 @@ import os
 def generate_launch_description():
     # Ruta del archivo YAML (ajústala según tu estructura de paquete)
     config_path = os.path.join(
-        get_package_share_directory('robotat'),
+        # get_package_share_directory('robotat'),
+        '/home/cruz/ros2_ws/src/robotat/'
         'config',
         'crazyflies_robotat.yaml'
     )

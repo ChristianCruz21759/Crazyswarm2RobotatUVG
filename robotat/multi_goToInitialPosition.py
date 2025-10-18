@@ -104,7 +104,7 @@ def main():
             node.destroy_node()
             rclpy.shutdown()
             return
-        elif voltage <= 3.7:
+        elif voltage <= 3.65:
             print(f'Nivel bajo de batería en cf{cf_number}. Recomendado cargar antes del vuelo.')
             node.destroy_node()
             rclpy.shutdown()

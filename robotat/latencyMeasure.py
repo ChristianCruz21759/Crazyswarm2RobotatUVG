@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# LATENCY MEASURE
+# Este script mide la ultima latencia enviada por cada dron del enjambre y guarda el historico en un archivo csv, los drones van del cf1 a cf10
+
 import rclpy
 from rclpy.node import Node
 from crazyflie_interfaces.msg import Status
@@ -8,7 +11,6 @@ import os
 import time
 
 NUM_DRONES = 10
-# DRONE_SELECTION = 10
 CSV_FILE = '10 drones 2 antenas 2.csv'
 TIMEOUT_SECONDS = 2.0
 READ_INTERVAL = 0.1     # segundos entre lecturas

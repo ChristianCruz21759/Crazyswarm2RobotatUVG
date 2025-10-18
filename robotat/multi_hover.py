@@ -2,13 +2,12 @@
 
 # HOVER MULTIPLE
 # Este script obtiene la posición de varios Crazyflie usando ROS2,
-# y mueve los drones al origen (0,0), realizando una secuencia de despegue, vuelo y aterrizaje.
+# y mueve los drones hacia arriba en la posicion XY actual, realizando una secuencia de despegue, vuelo y aterrizaje.
 
 import rclpy
 from motion_capture_tracking_interfaces.msg import NamedPoseArray
 from crazyflie_interfaces.msg import Status
 from rclpy.qos import QoSProfile, ReliabilityPolicy
-
 from crazyflie_py import Crazyswarm
 import numpy as np
 import yaml
@@ -21,14 +20,12 @@ HOVER_DURATION = 3.0    # Tiempo de espera en la posición objetivo en segundos
 
 # Ruta del archivo YAML
 YAML_PATH = os.path.join(
-        # get_package_share_directory('robotat'),
         '/home/cruz/ros2_ws/src/robotat/'
         'config',
         'crazyflies_robotat.yaml')
 
-
+# Funcion para cargar la configuracion de cada dron
 def load_drone_config(yaml_path):
-    """Carga la configuración YAML y devuelve una lista de drones habilitados con su offset."""
     with open(yaml_path, 'r') as f:
         data = yaml.safe_load(f)
 
@@ -41,7 +38,6 @@ def load_drone_config(yaml_path):
             })
     return drones_enabled
 
-
 def main():
     # Cargar configuración de drones
     drones_config = load_drone_config(YAML_PATH)
@@ -49,7 +45,9 @@ def main():
     OFFSETS = {d['cf_number']: np.array(d['offset']) for d in drones_config}
 
     if not CF_NUMBERS:
-        print("No hay drones habilitados en el archivo YAML. Abortando misión.")
+        print("No hay drones habilitados en el archivo YAML.")
+        node.destroy_node()
+        rclpy.shutdown()
         return
 
     print(f"Drones habilitados: {CF_NUMBERS}")
@@ -58,6 +56,9 @@ def main():
     swarm = Crazyswarm()
     timeHelper = swarm.timeHelper
     node = swarm.allcfs
+
+    # Obtener objetos Crazyflie por nombre
+    cfs = [node.crazyfliesByName[f'cf{cf_number}'] for cf_number in CF_NUMBERS]
 
     # Variables para almacenar posiciones y voltajes
     node.cf_positions = {cf_number: np.array([0.0, 0.0, 0.0]) for cf_number in CF_NUMBERS}
@@ -91,12 +92,10 @@ def main():
             qos_profile
         )
 
-    # --- Esperar datos ---
-    print("Esperando datos de voltaje...")
+    # --- Esperar datos de bateria ---
     while rclpy.ok() and not all(v is not None for v in node.battery_voltages.values()):
         rclpy.spin_once(node, timeout_sec=0.1)
 
-    # Comprobar baterías
     for cf_number in CF_NUMBERS:
         voltage = node.battery_voltages[cf_number]
         print(f'Batería del cf{cf_number}: {voltage:.2f} V')
@@ -105,18 +104,15 @@ def main():
             node.destroy_node()
             rclpy.shutdown()
             return
-        elif voltage <= 3.7:
+        elif voltage <= 3.6:
             print(f'Nivel bajo de batería en cf{cf_number}. Recomendado cargar antes del vuelo.')
             node.destroy_node()
             rclpy.shutdown()
             return
 
-    print("Esperando posiciones de los drones...")
+    # --- Esperar datos de posicion ---
     while rclpy.ok() and not all(p is not None for p in node.cf_positions.values()):
         rclpy.spin_once(node, timeout_sec=0.1)
-
-    # Obtener objetos Crazyflie
-    cfs = [node.crazyfliesByName[f'cf{cf_number}'] for cf_number in CF_NUMBERS]
 
     # Mostrar posiciones y definir objetivos
     goals = {}

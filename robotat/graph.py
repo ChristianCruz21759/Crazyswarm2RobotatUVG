@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+
+# GRAPH
+# Este script obtiene la posicion tridimensional de los objetos definidos hasta que se detenga su ejecucion, al finalizar muestra una grafica de las trayectorias de estos objetos y guarda el historico en un archivo csv
+
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy
@@ -7,8 +12,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from motion_capture_tracking_interfaces.msg import NamedPoseArray
 
-# Lista de nombres de objetos a rastrear
-OBJECT_NAMES = ['cf9']  # Modifica según tus objetos
+OBJECT_NAMES = ['cf1'] # Lista de nombres de objetos a rastrear
+FILE_NAME = 'objects_pose.csv' # Nombre de archivo a guardar
 
 class PoseLogger(Node):
     def __init__(self):
@@ -28,7 +33,7 @@ class PoseLogger(Node):
         self.pose_data = {name: [] for name in self.object_names}
 
         # Archivo CSV de salida
-        self.csv_file = 'objects_pose.csv'
+        self.csv_file = FILE_NAME
         with open(self.csv_file, mode='w', newline='') as file:
             writer = csv.writer(file)
             # Encabezado: x_objeto1, y_objeto1, z_objeto1, x_objeto2, y_objeto2, z_objeto2, ...

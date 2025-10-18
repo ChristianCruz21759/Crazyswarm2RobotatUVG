@@ -9,23 +9,23 @@ drones:
     enabled: true
     offset: [0.0, 0.5, 0.0]
   - cf_number: 4
-    enabled: false
+    enabled: true
     offset: [-0.5, 0.5, 0.0]
   - cf_number: 5
-    enabled: false
+    enabled: true
     offset: [0.5, 0.0, 0.0]
   - cf_number: 6
-    enabled: false
+    enabled: true
     offset: [-0.5, 0.0, 0.0]
   - cf_number: 7
-    enabled: false
+    enabled: true
     offset: [0.5, -0.5, 0.0]
   - cf_number: 8
-    enabled: false
+    enabled: true
     offset: [0.0, -0.5, 0.0]  
   - cf_number: 9
-    enabled: false
+    enabled: true
     offset: [-0.5, -0.5, 0.0]
   - cf_number: 10
-    enabled: false
+    enabled: true
     offset: [-1.0, 0.0, 0.0]

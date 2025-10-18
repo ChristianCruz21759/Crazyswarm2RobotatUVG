@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+
+# LECTURA DE FILTRO DE KALMAN
+# Script para verificar el funcionamiento del filtro de kalman versus el sistema de captura, para que este codigo funcione debe activarse el firmware logger en el archivo crazyflies.yaml
+
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy
@@ -8,14 +13,14 @@ from geometry_msgs.msg import PoseStamped
 from crazyflie_interfaces.msg import LogDataGeneric  # Agrega esta importación
 from rclpy.timer import Timer
 
-OBJECT_NAME = 'cf10'  # Solo un objeto
+CF_NAME = 'cf10'  # Nombre del Crazyflie
 READ_FREQ_HZ = 50.0   # Frecuencia de lectura en Hz
 
 class PoseLogger(Node):
     def __init__(self):
         super().__init__('pose_logger')
 
-        self.object_name = OBJECT_NAME  # Cambia a singular
+        self.object_name = CF_NAME 
 
         qos_profile = QoSProfile(depth=10)
         qos_profile.reliability = ReliabilityPolicy.BEST_EFFORT
@@ -30,7 +35,7 @@ class PoseLogger(Node):
         # Suscripción a /kalman_state_estimate usando LogDataGeneric
         self.subscription_kalman = self.create_subscription(
             LogDataGeneric,
-            f'/{OBJECT_NAME}/kalman_state_estimate',
+            f'/{CF_NAME}/kalman_state_estimate',
             self.listener_callback_kalman,
             qos_profile
         )

@@ -36,7 +36,9 @@ setup(
         	"latencyMeasure = robotat.latencyMeasure:main",
         	"kalman = robotat.kalman:main",
         	"multi_hover = robotat.multi_hover:main",
-        	"multi_goToInitialPosition = robotat.multi_goToInitialPosition:main"
+        	"multi_goToInitialPosition = robotat.multi_goToInitialPosition:main",
+        	"multi_followRigidBody = robotat.multi_followRigidBody:main",
+        	"goToChargingStation = robotat.goToChargingStation:main"
         ],
     },
 )

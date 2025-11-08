@@ -12,8 +12,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from motion_capture_tracking_interfaces.msg import NamedPoseArray
 
-OBJECT_NAMES = ['cf1'] # Lista de nombres de objetos a rastrear
-FILE_NAME = 'objects_pose.csv' # Nombre de archivo a guardar
+OBJECT_NAMES = ['cf1', 'cf2', 'cf3', 'cf4', 'cf5', 'cf6', 'cf7', 'cf8', 'cf9', 'cf10'] # Lista de nombres de objetos a rastrear
+FILE_NAME = 'multi_hover4.csv' # Nombre de archivo a guardar
 
 class PoseLogger(Node):
     def __init__(self):

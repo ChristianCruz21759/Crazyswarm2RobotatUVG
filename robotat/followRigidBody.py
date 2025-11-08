@@ -15,13 +15,13 @@ import numpy as np
 DEFAULT_CF_NUMBER = 1  # Número del Crazyflie
 DEFAULT_RB_NAME = 'RigidBody69' # Nombre del cuerpo rigido
 Z = 0.3  # Altura de vuelo en metros
-OFFSET = [0.3, -0.3, 0.0]  # Offset adicional a la posición objetivo
+OFFSET = [0.3, 0.0, 0.0]  # Offset adicional a la posición objetivo
 TAKEOFF_DURATION = 3.0  # Duración del despegue en segundos
 HOVER_DURATION = 0.0    # Tiempo de espera en la posición objetivo en segundos
 
 
 def main():
-    N_CYCLES = 10
+    N_CYCLES = 20
 
     # Inicializar Crazyswarm y ROS2
     swarm = Crazyswarm()

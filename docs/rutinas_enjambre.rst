@@ -1,7 +1,7 @@
 Rutinas de vuelo en enjambre
 ===============================
 
-Ya que las rutinas individuales fueron desarrolladas como nodos independientes de ROS2, es posible ejecutar multiples nodos de rutina al mismo tiempo, uno por cada dron en el enjambre. Esto permite que cada dron ejecute una rutina diferente de manera simultanea y coordinada. Esto se realiza por medio de archivos launch que permiten iniciar multiples nodos con diferentes parametros, los cuales se definen en el archivo ``crazyflies_robotat.yaml``. Las rutinas desarroladas fueron funciones simples para verificar el correcto funcionamiento de Crazyswarm2, dejando espacio a implementar rutinas mas complejas en el futuro.
+Se modificaron las rutinas individuales para poder controlar mas de un solo dron, esto por medio de ciclos que envien los mismos comandos a los drones seleccionados. Cada dron cuenta con diferentes parametros, los cuales se definen en el archivo ``crazyflies_robotat.yaml``. Las rutinas desarrolladas fueron funciones simples para verificar el correcto funcionamiento de Crazyswarm2, dejando espacio a implementar rutinas mas complejas en el futuro.
 
 multi_hover
 -----------

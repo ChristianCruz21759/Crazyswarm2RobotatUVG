@@ -13,9 +13,9 @@ import numpy as np
 
 # Parámetros de vuelo
 DEFAULT_CF_NUMBER = 1  # Número del Crazyflie
-DEFAULT_RB_NAME = 'RigidBody75'  # Nombre del Cuerpo Rigido
+DEFAULT_RB_NAME = 'RigidBody69'  # Nombre del Cuerpo Rigido
 Z = 0.3  # Altura de vuelo en metros
-OFFSET = [0.0, -0.5, 0.0]  # Offset adicional a la posición objetivo
+OFFSET = [0.0, -0.3, 0.0]  # Offset adicional a la posición objetivo
 TAKEOFF_DURATION = 3.0  # Duración del despegue en segundos
 HOVER_DURATION = 3.0    # Tiempo de espera en la posición objetivo en segundos
 
@@ -59,7 +59,7 @@ def main():
                 ])
 
     def status_callback(msg):
-        node.battery_voltages = msg.battery_voltage
+        node.battery_voltage = msg.battery_voltage
 
     # --- QoS Profile ---
     qos_profile = QoSProfile(depth=10)
@@ -69,11 +69,15 @@ def main():
     node.create_subscription(NamedPoseArray, '/poses', poses_callback, qos_profile)
 
     # Suscribirse al topico de status
-    node.create_subscription(Status, f'{cf}/status', status_callback, 10)
+    node.create_subscription(Status, f'cf{node.cf_number}/status', status_callback, qos_profile)
+
+    print('a')
 
     # --- Esperar datos de bateria ---
     while rclpy.ok() and node.battery_voltage is None:
         rclpy.spin_once(node, timeout_sec=0.1)
+
+    print('b')
 
     print(f'Batería del cf{node.cf_number}: {node.battery_voltage} V')
     if node.battery_voltage <= 3.5:

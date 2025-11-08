@@ -119,14 +119,22 @@ def main():
 
     # Mostrar posiciones y definir objetivos
     goals = {}
+    goto_durations = {}
     for cf, cf_number in zip(cfs, CF_NUMBERS):
         # pos = node.cf_positions[cf_number]
+        cf_pos = node.cf_positions[cf_number]
         pos = cf.initialPosition
         offset = OFFSETS[cf_number]
         # goal = np.array([pos[0], pos[1], Z]) + offset
+
         goal = np.array([pos[0], pos[1], Z])
         goals[cf_number] = goal
-        print(f'cf{cf_number}: posición inicial [x={pos[0]:.2f}, y={pos[1]:.2f}, z={pos[2]:.2f}] > objetivo [x={goal[0]:.2f}, y={goal[1]:.2f}, z={goal[2]:.2f}]')
+
+        distance = np.linalg.norm(goal - node.cf_positions[cf_number])
+        velocity = 0.3
+        goto_durations[cf_number] = max(distance / velocity, 1.0)
+
+        print(f'cf{cf_number}: posición inicial [x={cf_pos[0]:.2f}, y={cf_pos[1]:.2f}, z={cf_pos[2]:.2f}] > objetivo [x={goal[0]:.2f}, y={goal[1]:.2f}, z={goal[2]:.2f}]')
 
     # --- Secuencia de vuelo ---
     print("Iniciando secuencia de vuelo...")
@@ -138,7 +146,7 @@ def main():
 
     # Ir a la posición objetivo
     for cf, cf_number in zip(cfs, CF_NUMBERS):
-        cf.goTo(goals[cf_number], yaw=0.0, duration= 1.0 + HOVER_DURATION)
+        cf.goTo(goals[cf_number], yaw=0.0, duration= goto_durations[cf_number] + HOVER_DURATION)
     timeHelper.sleep(1.0 + HOVER_DURATION)
 
     # Aterrizaje

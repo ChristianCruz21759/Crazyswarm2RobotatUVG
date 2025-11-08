@@ -13,10 +13,10 @@ import numpy as np
 
 # Parámetros de vuelo
 DEFAULT_CF_NUMBER = 1  # Número del Crazyflie
-Z = 0.35  # Altura de vuelo en metros
+Z = 0.5  # Altura de vuelo en metros
 OFFSET = [0.0, 0.0, 0.0]  # Offset adicional a la posición objetivo
-TAKEOFF_DURATION = 5.0  # Duración del despegue en segundos
-HOVER_DURATION = 5.0    # Tiempo de espera en la posición objetivo en segundos
+TAKEOFF_DURATION = 3.0  # Duración del despegue en segundos
+HOVER_DURATION = 3.0    # Tiempo de espera en la posición objetivo en segundos
 
 def main():
 

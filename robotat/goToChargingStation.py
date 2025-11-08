@@ -15,7 +15,7 @@ import numpy as np
 DEFAULT_CF_NUMBER = 1  # Número del Crazyflie
 DEFAULT_CB_NUMBER = 1  # Número de la estación de carga
 Z = 0.3  # Altura de vuelo en metros
-OFFSET = [0.0, -0.5, 0.0]  # Offset adicional a la posición objetivo
+OFFSET = [0.0, 0.0, 0.0]  # Offset adicional a la posición objetivo
 TAKEOFF_DURATION = 3.0  # Duración del despegue en segundos
 HOVER_DURATION = 3.0    # Tiempo de espera en la posición objetivo en segundos
 
@@ -51,7 +51,7 @@ def main():
                     named_pose.pose.position.y,
                     named_pose.pose.position.z
                 ])
-            if named_pose.name == f'ChgBase{node.charging_station_number}':
+            if named_pose.name == f'chgbase{node.charging_station_number}':
                 node.charging_station_position = np.array([
                     named_pose.pose.position.x,
                     named_pose.pose.position.y,
@@ -69,7 +69,7 @@ def main():
     node.create_subscription(NamedPoseArray, '/poses', poses_callback, qos_profile)
 
     # Suscribirse al topico de status
-    node.create_subscription(Status, f'{cf}/status', status_callback, 10)
+    node.create_subscription(Status, f'cf{node.cf_number}/status', status_callback, 10)
 
     # --- Esperar datos de bateria ---
     while rclpy.ok() and node.battery_voltage is None:
@@ -112,9 +112,15 @@ def main():
     cf.goTo(goal, yaw=0.0, duration=goto_duration)
     timeHelper.sleep(goto_duration + HOVER_DURATION)
 
+    # Ir a la posicion objetivo mas abajo
+    goal[2] = 0.1  # Altura más baja
+    cf.goTo(goal, yaw=0.0, duration=TAKEOFF_DURATION)
+    timeHelper.sleep(TAKEOFF_DURATION)
+
+
     # Aterrizaje
-    cf.land(targetHeight=0.02, duration=TAKEOFF_DURATION + Z)
-    timeHelper.sleep(TAKEOFF_DURATION + Z)
+    cf.land(targetHeight=0.02, duration=Z)
+    timeHelper.sleep(Z)
 
     print("Secuencia finalizada. Drones aterrizados.")
     

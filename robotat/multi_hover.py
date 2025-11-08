@@ -14,7 +14,7 @@ import yaml
 import os
 
 # Parámetros de vuelo generales
-Z = 0.4  # Altura de vuelo en metros
+Z = 0.5  # Altura de vuelo en metros
 TAKEOFF_DURATION = 3.0  # Duración del despegue en segundos
 HOVER_DURATION = 3.0    # Tiempo de espera en la posición objetivo en segundos
 

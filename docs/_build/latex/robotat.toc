@@ -1,0 +1,25 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {chapter}{\numberline {1}Configuracion}{3}{chapter.1}%
+\contentsline {section}{\numberline {1.1}crazyflies.yaml}{3}{section.1.1}%
+\contentsline {section}{\numberline {1.2}motion\_capture.yaml}{4}{section.1.2}%
+\contentsline {section}{\numberline {1.3}server.yaml}{5}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Modulos Crazyradio PA}{5}{section.1.4}%
+\contentsline {chapter}{\numberline {2}Comandos}{7}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Crazyflie Server}{7}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Rutinas individuales}{8}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Rutinas de enjambre}{8}{section.2.3}%
+\contentsline {section}{\numberline {2.4}cfGui.py}{8}{section.2.4}%
+\contentsline {chapter}{\numberline {3}Rutinas de vuelo individuales}{11}{chapter.3}%
+\contentsline {section}{\numberline {3.1}hover}{11}{section.3.1}%
+\contentsline {section}{\numberline {3.2}goToInitialPosition}{12}{section.3.2}%
+\contentsline {section}{\numberline {3.3}goToOrigin}{12}{section.3.3}%
+\contentsline {section}{\numberline {3.4}goToRigidBody}{12}{section.3.4}%
+\contentsline {section}{\numberline {3.5}goToChargingStation}{12}{section.3.5}%
+\contentsline {section}{\numberline {3.6}followRigidBody}{12}{section.3.6}%
+\contentsline {section}{\numberline {3.7}Otros nodos}{12}{section.3.7}%
+\contentsline {section}{\numberline {3.8}Creacion de rutinas}{13}{section.3.8}%
+\contentsline {chapter}{\numberline {4}Rutinas de vuelo en enjambre}{15}{chapter.4}%
+\contentsline {section}{\numberline {4.1}multi\_hover}{15}{section.4.1}%
+\contentsline {section}{\numberline {4.2}multi\_goToInitialPosition}{15}{section.4.2}%
+\contentsline {section}{\numberline {4.3}multi\_goToRigidBody}{15}{section.4.3}%
+\contentsline {section}{\numberline {4.4}multi\_followRigidBody}{16}{section.4.4}%
